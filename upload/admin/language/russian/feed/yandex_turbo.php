@@ -1,0 +1,1 @@
+<?php require( __DIR__ . '/../../ru-ru/extension/feed/' . basename(__FILE__) ); ?>
