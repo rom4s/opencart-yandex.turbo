@@ -62,19 +62,44 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-2 control-label" for="input-data-feed"><?php echo $entry_data_feed; ?></label>
+						<label class="col-sm-2 control-label" for="input-status"><?php echo $entry_yandex_for_categories; ?></label>
 						<div class="col-sm-10">
-							<textarea rows="5" id="input-data-feed" class="form-control" readonly>
-<?php foreach ($data_feed_ar as $df): ?>
-<?= $df . "\n"; ?>
-<?php endforeach; ?>
-							</textarea>
+							<select name="yandex_turbo_for_categories" id="input-status" class="form-control">
+							<?php if ($yandex_turbo_for_categories): ?>
+								<option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+								<option value="0"><?php echo $text_disabled; ?></option>
+							<?php else: ?>
+								<option value="1"><?php echo $text_enabled; ?></option>
+								<option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+							<?php endif; ?>
+							</select>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="yandex_turbo_limit"><?= $entry_limit; ?></label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" name="yandex_turbo_limit" value="<?php echo $yandex_turbo_limit; ?>"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="yandex_turbo_phone"><?= $entry_phone_for_call; ?></label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" name="yandex_turbo_phone" value="<?php echo $yandex_turbo_phone; ?>"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="yandex_turbo_code"><?= $entry_code; ?></label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" name="yandex_turbo_code" value="<?php echo $yandex_turbo_code; ?>"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="input-data-feed"><?php echo $entry_data_feed; ?></label>
+						<div class="col-sm-10">
+							<textarea rows="5" id="input-data-feed" class="form-control" readonly>
+<?php foreach ($data_feed_ar as $df): ?>
+<?= $df . "\n"; ?>
+<?php endforeach; ?></textarea>
 						</div>
 					</div>
 					<div class="form-group">

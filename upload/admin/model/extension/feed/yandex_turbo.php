@@ -30,19 +30,17 @@ class ModelExtensionFeedYandexTurbo extends Model {
 			SELECT COUNT(*) as `total` FROM (
 				SELECT `" . DB_PREFIX . "product`.`product_id`, `image`, `" . DB_PREFIX . "product`.`price` AS `price`, `tax_class_id`, `date_added`, `date_modified`,
 					`meta_title`, `name`, `meta_h1`, `description`, `meta_description`,
-					`" . DB_PREFIX . "product_special`.`price` AS `special`
+				   (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = `" . DB_PREFIX . "product`.product_id AND ps.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special
 				FROM `" . DB_PREFIX . "product`
 				LEFT OUTER JOIN `" . DB_PREFIX . "product_description`
 					ON `" . DB_PREFIX . "product`.`product_id` = `" . DB_PREFIX . "product_description`.`product_id`
 				LEFT OUTER JOIN `" . DB_PREFIX . "product_to_category`
 					ON `" . DB_PREFIX . "product`.`product_id` = `" . DB_PREFIX . "product_to_category`.`product_id`
-				LEFT OUTER JOIN `" . DB_PREFIX . "product_special`
-					ON `" . DB_PREFIX . "product`.`product_id` = `" . DB_PREFIX . "product_special`.`product_id`
 				WHERE `category_id` IN (
 					SELECT `category_id` 
 					FROM  `" . DB_PREFIX . "yandex_turbo_category_to_category` 
 				) AND `status` = 1 AND `language_id` = {$lcid}
-				GROUP BY `oc_product`.`product_id`
+				GROUP BY `" . DB_PREFIX . "product`.`product_id`
 				ORDER BY `date_added` ASC
 			) t1;
 		";

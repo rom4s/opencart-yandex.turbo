@@ -15,12 +15,14 @@ class ControllerExtensionFeedYandexTurbo extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate())
 		{
+			// Save code
+			if (isset($this->request->post['yandex_turbo_code']))
+				$this->request->post['yandex_turbo_code'] = htmlspecialchars($this->request->post['yandex_turbo_code']);
+
 			// Save categories
+			$this->model_extension_feed_yandex_turbo->saveCategories(@$this->request->post['yandex_categories']);
 			if (isset($this->request->post['yandex_categories']))
-			{
-				$this->model_extension_feed_yandex_turbo->saveCategories(@$this->request->post['yandex_categories']);
 				unset($this->request->post['yandex_categories']);
-			}
 			
 			// Items limit on feed page
 			if (isset($this->request->post['yandex_turbo_limit'])) {
@@ -44,10 +46,13 @@ class ControllerExtensionFeedYandexTurbo extends Controller {
 		$data['text_disabled'] = $this->language->get('text_disabled');
 
 		$data['entry_yandex_categories'] = $this->language->get('entry_yandex_categories');
+		$data['entry_yandex_for_categories'] = $this->language->get('entry_yandex_for_categories');
 		$data['entry_category'] = $this->language->get('entry_category');
 		$data['entry_data_feed'] = $this->language->get('entry_data_feed');
 		$data['entry_status'] = $this->language->get('entry_status');
 		$data['entry_limit'] = $this->language->get('entry_limit');
+		$data['entry_code'] = $this->language->get('entry_code');
+		$data['entry_phone_for_call'] = $this->language->get('entry_phone_for_call');
 
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');
@@ -95,10 +100,30 @@ class ControllerExtensionFeedYandexTurbo extends Controller {
 			$data['yandex_turbo_status'] = $this->config->get('yandex_turbo_status');
 		}
 
+		if (isset($this->request->post['yandex_turbo_for_categories'])) {
+			$data['yandex_turbo_for_categories'] = $this->request->post['yandex_turbo_for_categories'];
+		} else {
+			$data['yandex_turbo_for_categories'] = $this->config->get('yandex_turbo_for_categories');
+		}
+
 		if (isset($this->request->post['yandex_turbo_limit'])) {
 			$data['yandex_turbo_limit'] = (int)$this->request->post['yandex_turbo_limit'];
 		} else {
 			$data['yandex_turbo_limit'] = (int)$this->config->get('yandex_turbo_limit');
+		}
+
+		if (isset($this->request->post['yandex_turbo_code'])) {
+			$data['yandex_turbo_code'] = $this->request->post['yandex_turbo_code'];
+		} else {
+			$data['yandex_turbo_code'] = $this->config->get('yandex_turbo_code');
+		}
+		$code = $data['yandex_turbo_code'];
+		$data['yandex_turbo_code'] = htmlspecialchars_decode($data['yandex_turbo_code']);
+
+		if (isset($this->request->post['yandex_turbo_phone'])) {
+			$data['yandex_turbo_phone'] = $this->request->post['yandex_turbo_phone'];
+		} else {
+			$data['yandex_turbo_phone'] = $this->config->get('yandex_turbo_phone');
 		}
 
 		$data['yandex_turbo_count'] = $this->model_extension_feed_yandex_turbo->getProductsCount();
@@ -108,7 +133,12 @@ class ControllerExtensionFeedYandexTurbo extends Controller {
 	
 		for( $i = 1; $i <= $ic; ++$i )
 		{
-			$data['data_feed_ar'][] = HTTP_CATALOG . 'index.php?route=extension/feed/yandex_turbo&p=' . $i;
+			$data['data_feed_ar'][] = HTTP_CATALOG . 'index.php?route=extension/feed/yandex_turbo'. ($code ? '&code='. $code : '') .'&p=' . $i;
+		}
+
+		if( !!$this->config->get('yandex_turbo_for_categories') )
+		{
+			$data['data_feed_ar'][] = HTTP_CATALOG . 'index.php?route=extension/feed/yandex_turbo'. ($code ? '&code='. $code : '') .'&categories=1';
 		}
 
 		/* ---------- */
@@ -183,10 +213,17 @@ class ControllerExtensionFeedYandexTurbo extends Controller {
 		if( !$limit )
 			$limit = 1000;
 
+		$code = $this->config->get('yandex_turbo_code');
+
 		$ic = ( $count / $limit + ($count % $limit ? 1 : 0) );
 		for( $i = 1; $i <= $ic; ++$i )
 		{
-			$json['pages'][] = HTTP_CATALOG . 'index.php?route=extension/feed/yandex_turbo&p=' . $i;
+			$json['pages'][] = HTTP_CATALOG . 'index.php?route=extension/feed/yandex_turbo'. ($code ? '&code='. $code : '') .'&p=' . $i;
+		}
+
+		if( !!$this->config->get('yandex_turbo_for_categories') )
+		{
+			$json['pages'][] = HTTP_CATALOG . 'index.php?route=extension/feed/yandex_turbo'. ($code ? '&code='. $code : '') .'&categories=1';
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
